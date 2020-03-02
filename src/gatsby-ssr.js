@@ -418,6 +418,31 @@ export const replaceRenderer = (
       iframe.parentNode.replaceChild(ampIframe, iframe);
     });
 
+    // Support videos.
+    /** @type {HTMLVideoElement[]} */
+    const videos = Array.from(document.getElementsByTagName("video"));
+    if (videos.length > 0) {
+      headComponents.push({ name: "amp-video", version: "0.1" });
+    }
+
+    for (const video of videos) {
+      /** @type {HTMLElement} */
+      const ampVideo = document.createElement("amp-video");
+      
+      // Move all <source> children of video to ampVideo
+      for (const source of video.getElementsByTagName("source")) {
+        ampVideo.appendChild(source);
+      }
+
+      for (const attr of video.getAttributeNames()) {
+        ampVideo.setAttribute(attr, video.getAttribute(attr));
+      }
+
+      ampVideo.setAttribute("layout", "intrinsic");
+
+      video.parentNode.replaceChild(ampVideo, video);
+    }
+
     // Custom plugins I have issues with.
     // Replace the container containing the first react-share button with a custom AMP sharing panel.
     // THEN remove the rest if needed.

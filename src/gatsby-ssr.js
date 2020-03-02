@@ -344,8 +344,10 @@ export const replaceRenderer = (
     const twitterPosts = [].slice.call(
       document.getElementsByClassName("twitter-tweet")
     );
-    twitterPosts.forEach(post => {
+    if (twitterPosts.length > 0) {
       headComponents.push({ name: "amp-twitter", version: "0.1" });
+    }
+    twitterPosts.forEach(post => {
       const ampTwitter = document.createElement("amp-twitter");
       const attributes = Object.keys(post.attributes);
       const includedAttributes = attributes.map(key => {

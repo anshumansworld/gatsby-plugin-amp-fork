@@ -181,7 +181,7 @@ export const onRenderBody = (
 
 export const replaceRenderer = (
   { bodyComponent, replaceBodyHTMLString, setHeadComponents, pathname },
-  { pathIdentifier = "/amp/" }
+  { pathIdentifier = "/amp/", facebookAppId = "" }
 ) => {
   const defaults = {
     image: {

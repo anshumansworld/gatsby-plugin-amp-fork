@@ -258,6 +258,7 @@ export const replaceRenderer = (
         throw new Error("padding bottom " + pb + " not legal.");
       }
 
+      img.style = {};
       background.parentNode.removeChild(background);
     }
     const wrappers = Array.from(document.getElementsByClassName("gatsby-image-wrapper"));
@@ -304,10 +305,12 @@ export const replaceRenderer = (
       img.width = w;
       img.height = h;
       img.layout = fixed ? "fixed" : "responsive";
+      img.style = {};
     }
 
     const images =Array.from(document.getElementsByTagName("img"));
     images.forEach(image => {
+      image.removeAttribute("loading");
       let ampImage;
       if (image.src && image.src.indexOf(".gif") > -1) {
         ampImage = document.createElement("amp-anim");

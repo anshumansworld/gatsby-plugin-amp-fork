@@ -132,15 +132,15 @@ export const onRenderBody = (
   if (isAmp) {
     setHtmlAttributes({ amp: "" });
     setHeadComponents([
-      <link
-        rel="canonical"
-        href={interpolate(relCanonicalPattern, {
-          canonicalBaseUrl,
-          pathname
-        })
-          .replace(pathIdentifier, "")
-          .replace(/([^:])(\/\/+)/g, "$1/")}
-      />,
+      // <link
+      //   rel="canonical"
+      //   href={interpolate(relCanonicalPattern, {
+      //     canonicalBaseUrl,
+      //     pathname
+      //   })
+      //     .replace(pathIdentifier, "")
+      //     .replace(/([^:])(\/\/+)/g, "$1/")}
+      // />,
       useAmpClientIdApi ? (
         <meta name="amp-google-client-id-api" content="googleanalytics" />
       ) : (
@@ -205,7 +205,106 @@ export const replaceRenderer = (
     const document = dom.window.document;
 
     // convert images to amp-img or amp-anim
-    const images = [].slice.call(document.getElementsByTagName("img"));
+    //
+    // We do this in three steps:
+    // 1. Flatten <picture> tags into just an <img> with a preferred source.
+    // 2. Flatten out .gatsby-resp-image-wrapper and infer width/height from it.
+    // 3. Replace plain <img> tags.0
+    for (const wrapper of Array.from(document.getElementsByClassName("gatsby-image-wrapper"))) {
+      const noscript = Array.from(wrapper.getElementsByTagName("noscript"));
+      for (const n of noscript) {
+        const parent = n.parentNode;
+        const content = n.textContent || n.innerHTML;
+        n.outerHTML = content;
+      }
+    }
+
+    const pictures = Array.from(document.getElementsByTagName("picture"));
+    for (const picture of pictures) {
+      const webp = Array.from(picture.getElementsByTagName("source")).find(source => source.type === "image/webp");
+      const img = Array.from(picture.getElementsByTagName("img"))[0].cloneNode();
+      if (!img) {
+        throw new Error("Found <picture> without <img> under it.");
+      }
+
+      if (webp) {
+        // Construct regular <img> from webp.
+        img.srcset = webp.srcset;
+        img.sizes = webp.sizes;
+      }
+
+      picture.parentNode.replaceChild(img, picture);
+    }
+
+    // Two kinds of images: (1) responsive ones with a background-image span with a class,
+    // and (2) ones with a <div aria-hidden style="width/padding-bottom"><img src="data:"...>
+    const resps = Array.from(document.getElementsByClassName("gatsby-resp-image-wrapper"));
+    for (const respImage of resps) {
+      /** @type {HTMLSpanElement} */
+      const background = respImage.getElementsByClassName("gatsby-resp-image-background-image").item(0);
+      const imgs = respImage.getElementsByTagName("img");
+      const img = imgs.item(0);
+      if (!background) throw new Error("Found resp image wrapper with no background image.");
+      if (imgs.length > 1) throw new Error("Found resp image with multiple img");
+      if (!img) throw new Error("Found resp image with no img");
+
+      const pb = background.style.paddingBottom;
+      if (pb.endsWith('%')) {
+        img.width = 1000;
+        img.height = 10 * parseFloat(pb.slice(0, -1));
+      } else {
+        throw new Error("padding bottom " + pb + " not legal.");
+      }
+
+      background.parentNode.removeChild(background);
+    }
+    const wrappers = Array.from(document.getElementsByClassName("gatsby-image-wrapper"));
+    for (const wrapper_ of wrappers) {
+      /** @type {HTMLDivElement} */
+      const wrapper = wrapper_;
+      const fixed = !!(wrapper.style.width && wrapper.style.height);
+
+      // Laid out like this:
+      // <div aria-hidden style="SIZE HINTS"></div>  <--- only if its responsive!
+      // <img aria-hidden src="data:..."/>
+      // <noscript>  (already extracted out)
+      //   <Picture> (already converted to img by now)
+      // </noscript>
+      const imgs = Array.from(wrapper.getElementsByTagName("img"));
+      if (imgs.length !== 2) throw new Error("Expected exactly two img tags, saw " + imgs.length);
+      imgs[0].parentNode.removeChild(imgs[0]);
+      const img = imgs[1];
+
+      let w, h;
+
+      if (fixed) {
+        if (wrapper.style.width.endsWith('px') && wrapper.style.height.endsWith('px')) {
+          w = parseFloat(wrapper.style.width.slice(0, -2));
+          h = parseFloat(wrapper.style.height.slice(0, -2));
+        } else {
+          throw new Error("Widt/Height in fixed case not legal: " + wrapper.style.width + " " + wrapper.style.height)
+        }
+      } else {
+        const divs = wrapper.getElementsByTagName("div");
+        if (divs.length > 1) throw new Error("Expected one div saw " + divs.length);
+        if (divs.length == 0) throw new Error("Need div for size hints");
+        const div = divs[0];
+
+        if (div.style.width.endsWith('%') && div.style.paddingBottom.endsWith('%')) {
+          w = 10 * parseFloat(div.style.width.slice(0, -1));
+          h = 10 * parseFloat(div.style.paddingBottom.slice(0, -1));
+        } else {
+          throw new Error("padding bottom " + pb + " or width " + w + " not legal.");
+        }
+        div.parentNode.removeChild(div);
+      }
+
+      img.width = w;
+      img.height = h;
+      img.layout = fixed ? "fixed" : "responsive";
+    }
+
+    const images =Array.from(document.getElementsByTagName("img"));
     images.forEach(image => {
       let ampImage;
       if (image.src && image.src.indexOf(".gif") > -1) {

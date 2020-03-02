@@ -438,7 +438,7 @@ export const replaceRenderer = (
         ampVideo.setAttribute(attr, video.getAttribute(attr));
       }
 
-      ampVideo.setAttribute("layout", "intrinsic");
+      ampVideo.setAttribute("layout", "fixed");
 
       video.parentNode.replaceChild(ampVideo, video);
     }

@@ -416,6 +416,17 @@ export const replaceRenderer = (
       });
       iframe.parentNode.replaceChild(ampIframe, iframe);
     });
+
+    // Custom plugins I have issues with.
+    for (const span of document.getElementsByClassName("react-share__ShareCount")) {
+      span.removeAttribute("url");
+    }
+    for (const button of document.getElementsByClassName("react-share__ShareButton")) {
+      button.removeAttribute("via");
+      button.removeAttribute("source");
+      button.removeAttribute("separator");
+    }
+
     setHeadComponents(
       Array.from(new Set(headComponents)).map((component, i) => (
         <Fragment key={`head-components-${i}`}>

@@ -30,7 +30,8 @@ export const onPreRenderHTML = (
     includedPaths = [],
     excludedPaths = [],
     pathIdentifier = "/amp/",
-    relAmpHtmlPattern = "{{canonicalBaseUrl}}{{pathname}}{{pathIdentifier}}"
+    relAmpHtmlPattern = "{{canonicalBaseUrl}}{{pathname}}{{pathIdentifier}}",
+    facebookAppId = "",
   }
 ) => {
   const headComponents = flattenDeep(getHeadComponents());
@@ -418,6 +419,30 @@ export const replaceRenderer = (
     });
 
     // Custom plugins I have issues with.
+    // Replace the container containing the first react-share button with a custom AMP sharing panel.
+    // THEN remove the rest if needed.
+    let socialAdded = false;
+    while (true) {
+      /** @type {NodeListOf<HTMLButtonElement>} */
+      const buttons = document.getElementsByClassName("react-share__ShareButton");
+      if (buttons.length === 0) break;
+
+      socialAdded = true;
+
+      buttons.item(0).parentNode.innerHTML = [
+        `<amp-social-share type="twitter"></amp-social-share>`,
+        `<amp-social-share type="linkedin"></amp-social-share>`,
+        `<amp-social-share type="facebook" data-param-app_id="${facebookAppId.replace('"', '\\"')}"></amp-social-share>`,
+        `<amp-social-share type="email"></amp-social-share>`,
+        `<amp-social-share type="sms"></amp-social-share>`,
+        `<amp-social-share type="system"></amp-social-share>`,
+      ].join('');
+    }
+
+    if (socialAdded) {
+      headComponents.push({ name: "amp-social-share", version: "0.1" });
+    }
+
     for (const span of document.getElementsByClassName("react-share__ShareCount")) {
       span.removeAttribute("url");
     }

@@ -106,18 +106,20 @@ export const onPreRenderHTML = (
       includedPaths.findIndex(_path => minimatch(pathname, _path)) > -1) ||
     (excludedPaths.length === 0 && includedPaths.length === 0)
   ) {
-    replaceHeadComponents([
-      <link
-        rel="amphtml"
-        key="gatsby-plugin-amp-amphtml-link"
-        href={interpolate(relAmpHtmlPattern, {
-          canonicalBaseUrl,
-          pathIdentifier,
-          pathname
-        }).replace(/([^:])(\/\/+)/g, "$1/")}
-      />,
-      ...headComponents
-    ]);
+    // this doesn't play wel with gatsby-browser.js
+    // we can add a client side part, or, more easily, we can just  use helmet.
+    // replaceHeadComponents([
+    //   <link
+    //     rel="amphtml"
+    //     key="gatsby-plugin-amp-amphtml-link"
+    //     href={interpolate(relAmpHtmlPattern, {
+    //       canonicalBaseUrl,
+    //       pathIdentifier,
+    //       pathname
+    //     }).replace(/([^:])(\/\/+)/g, "$1/")}
+    //   />,
+    //   ...headComponents
+    // ]);
   }
 };
 

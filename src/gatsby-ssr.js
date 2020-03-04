@@ -218,7 +218,6 @@ export const replaceRenderer = (
     for (const wrapper of Array.from(document.getElementsByClassName("gatsby-image-wrapper"))) {
       const noscript = Array.from(wrapper.getElementsByTagName("noscript"));
       for (const n of noscript) {
-        const parent = n.parentNode;
         const content = n.textContent || n.innerHTML;
         n.outerHTML = content;
       }
@@ -235,7 +234,8 @@ export const replaceRenderer = (
       if (webp) {
         // Construct regular <img> from webp.
         img.srcset = webp.srcset;
-        img.sizes = webp.sizes;
+        // Don't propagate 'sizes'. We set width/height explicitly which ends up giving a better sense for responsive images.
+        // img.sizes = webp.sizes;
       }
 
       picture.parentNode.replaceChild(img, picture);
@@ -262,6 +262,7 @@ export const replaceRenderer = (
       }
 
       img.style = {};
+      img.removeAttribute("sizes");
       background.parentNode.removeChild(background);
     }
     const wrappers = Array.from(document.getElementsByClassName("gatsby-image-wrapper"));
@@ -309,6 +310,7 @@ export const replaceRenderer = (
       img.height = h;
       img.layout = fixed ? "fixed" : "responsive";
       img.style = {};
+      img.removeAttribute("sizes");
     }
 
     const images =Array.from(document.getElementsByTagName("img"));

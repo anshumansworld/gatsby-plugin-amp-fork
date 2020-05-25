@@ -106,18 +106,20 @@ export const onPreRenderHTML = (
       includedPaths.findIndex(_path => minimatch(pathname, _path)) > -1) ||
     (excludedPaths.length === 0 && includedPaths.length === 0)
   ) {
-    replaceHeadComponents([
-      <link
-        rel="amphtml"
-        key="gatsby-plugin-amp-amphtml-link"
-        href={interpolate(relAmpHtmlPattern, {
-          canonicalBaseUrl,
-          pathIdentifier,
-          pathname
-        }).replace(/([^:])(\/\/+)/g, "$1/")}
-      />,
-      ...headComponents
-    ]);
+    // this doesn't play wel with gatsby-browser.js
+    // we can add a client side part, or, more easily, we can just  use helmet.
+    // replaceHeadComponents([
+    //   <link
+    //     rel="amphtml"
+    //     key="gatsby-plugin-amp-amphtml-link"
+    //     href={interpolate(relAmpHtmlPattern, {
+    //       canonicalBaseUrl,
+    //       pathIdentifier,
+    //       pathname
+    //     }).replace(/([^:])(\/\/+)/g, "$1/")}
+    //   />,
+    //   ...headComponents
+    // ]);
   }
 };
 
@@ -217,7 +219,6 @@ export const replaceRenderer = (
     for (const wrapper of Array.from(document.getElementsByClassName("gatsby-image-wrapper"))) {
       const noscript = Array.from(wrapper.getElementsByTagName("noscript"));
       for (const n of noscript) {
-        const parent = n.parentNode;
         const content = n.textContent || n.innerHTML;
         n.outerHTML = content;
       }
@@ -234,7 +235,8 @@ export const replaceRenderer = (
       if (webp) {
         // Construct regular <img> from webp.
         img.srcset = webp.srcset;
-        img.sizes = webp.sizes;
+        // Don't propagate 'sizes'. We set width/height explicitly which ends up giving a better sense for responsive images.
+        // img.sizes = webp.sizes;
       }
 
       picture.parentNode.replaceChild(img, picture);
@@ -270,6 +272,7 @@ export const replaceRenderer = (
       }
 
       img.style = {};
+      img.removeAttribute("sizes");
       background.parentNode.removeChild(background);
     }
     const wrappers = Array.from(document.getElementsByClassName("gatsby-image-wrapper"));
@@ -317,6 +320,7 @@ export const replaceRenderer = (
       img.height = h;
       img.layout = fixed ? "fixed" : "responsive";
       img.style = {};
+      img.removeAttribute("sizes");
     }
 
     const images =Array.from(document.getElementsByTagName("img"));

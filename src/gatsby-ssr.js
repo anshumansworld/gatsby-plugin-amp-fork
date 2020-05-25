@@ -262,15 +262,6 @@ export const replaceRenderer = (
         throw new Error("padding bottom " + pb + " not legal.");
       }
 
-      // https://amp.dev/documentation/guides-and-tutorials/learn/amp-html-layout/#disable-inline-width
-      // We will disalbe the "inline width" feature of amp which uses the "sizes" on an image to set an
-      // inline CSS width.
-      //
-      // This works horrible for Gatsby Responsive images.
-      if (img.hasAttribute("sizes")) {
-        img.setAttribute("disable-inline-width", "");
-      }
-
       img.style = {};
       img.removeAttribute("sizes");
       background.parentNode.removeChild(background);

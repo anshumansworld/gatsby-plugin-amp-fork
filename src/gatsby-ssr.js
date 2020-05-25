@@ -205,6 +205,7 @@ export const replaceRenderer = (
   if (isAmp) {
     const bodyHTML = renderToString(bodyComponent);
     const dom = new JSDOM(bodyHTML);
+    /** @type {Document} */
     const document = dom.window.document;
 
     // convert images to amp-img or amp-anim
@@ -243,7 +244,7 @@ export const replaceRenderer = (
     // and (2) ones with a <div aria-hidden style="width/padding-bottom"><img src="data:"...>
     const resps = Array.from(document.getElementsByClassName("gatsby-resp-image-wrapper"));
     for (const respImage of resps) {
-      /** @type {HTMLSpanElement} */
+      /** @type {?HTMLSpanElement} */
       const background = respImage.getElementsByClassName("gatsby-resp-image-background-image").item(0);
       const imgs = respImage.getElementsByTagName("img");
       const img = imgs.item(0);
@@ -257,6 +258,15 @@ export const replaceRenderer = (
         img.height = 10 * parseFloat(pb.slice(0, -1));
       } else {
         throw new Error("padding bottom " + pb + " not legal.");
+      }
+
+      // https://amp.dev/documentation/guides-and-tutorials/learn/amp-html-layout/#disable-inline-width
+      // We will disalbe the "inline width" feature of amp which uses the "sizes" on an image to set an
+      // inline CSS width.
+      //
+      // This works horrible for Gatsby Responsive images.
+      if (img.hasAttribute("sizes")) {
+        img.setAttribute("disable-inline-width", "");
       }
 
       img.style = {};
@@ -334,7 +344,7 @@ export const replaceRenderer = (
     });
 
     // remove 20px by 20px blur up background image CSS as it's > 1000 bytes - not AMP compatible
-    const gatsbyRespBackgroundImages = [].slice.call(
+    const gatsbyRespBackgroundImages = Array.from(
       document.getElementsByClassName("gatsby-resp-image-background-image")
     );
     gatsbyRespBackgroundImages.forEach(gatsbyRespBackgroundImage => {
@@ -342,7 +352,7 @@ export const replaceRenderer = (
     });
 
     // convert twitter posts to amp-twitter
-    const twitterPosts = [].slice.call(
+    const twitterPosts = Array.from(
       document.getElementsByClassName("twitter-tweet")
     );
     if (twitterPosts.length > 0) {
@@ -362,7 +372,7 @@ export const replaceRenderer = (
         }
       });
       // grab the last link in the tweet for the twee id
-      const links = [].slice.call(post.getElementsByTagName("a"));
+      const links = Array.from(post.getElementsByTagName("a"));
       const link = links[links.length - 1];
       const hrefArr = link.href.split("/");
       const id = hrefArr[hrefArr.length - 1].split("?")[0];
@@ -375,7 +385,7 @@ export const replaceRenderer = (
     });
 
     // convert iframes to amp-iframe or amp-youtube
-    const iframes = [].slice.call(document.getElementsByTagName("iframe"));
+    const iframes = Array.from(document.getElementsByTagName("iframe"));
     iframes.forEach(iframe => {
       let ampIframe;
       let attributes;

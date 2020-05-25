@@ -1,6 +1,8 @@
 {
     "compilerOptions": {
         "allowJs": true,
-        "outDir": "./dist"
+        "outDir": "./dist",
+        "strictBindCallApply": true,
+        "strictNullChecks": true
     }
 }

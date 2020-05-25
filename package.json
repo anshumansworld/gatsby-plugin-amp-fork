@@ -1,6 +1,6 @@
 {
-  "name": "gatsby-plugin-google-amp",
-  "version": "1.0.2",
+  "name": "@eyassh/gatsby-plugin-google-amp",
+  "version": "1.0.3",
   "description": "A gatsby plugin for Google AMP pages",
   "main": "index.js",
   "scripts": {
@@ -9,12 +9,12 @@
     "watch": "babel -w src --out-dir . --ignore **/__tests__",
     "commit": "git add . && git commit && git push -u origin master"
   },
-  "author": "Mukul Rathi",
+  "author": "Eyas Sharaiha",
   "license": "MIT",
-  "homepage": "https://github.com/mukul-rathi/gatsby-plugin-google-amp#readme",
-  "repository": "https://github.com/mukul-rathi/gatsby-plugin-google-amp",
+  "homepage": "https://github.com/Eyas/gatsby-plugin-google-amp/tree/local-fixes#readme",
+  "repository": "https://github.com/Eyas/gatsby-plugin-google-amp/tree/local-fixes",
   "bugs": {
-    "url": "https://github.com/mukul-rathi/gatsby-plugin-google-amp/issues"
+    "url": "https://github.com/Eyas/gatsby-plugin-google-amp/issues"
   },
   "dependencies": {
     "@types/jsdom": "^16.2.3",

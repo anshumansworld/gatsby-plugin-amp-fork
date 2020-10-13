@@ -439,11 +439,13 @@ export const replaceRenderer = (
         ampVideo.appendChild(source);
       }
 
+      let isResponsive = false;
       for (const attr of video.getAttributeNames()) {
+        if (attr === "data-responsive") { isResponsive = true; continue; }
         ampVideo.setAttribute(attr, video.getAttribute(attr));
       }
 
-      ampVideo.setAttribute("layout", "fixed");
+      ampVideo.setAttribute("layout", isResponsive ? "responsive" : "fixed");
 
       video.parentNode.replaceChild(ampVideo, video);
     }

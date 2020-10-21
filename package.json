@@ -1,6 +1,6 @@
 {
   "name": "@eyassh/gatsby-plugin-google-amp",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A gatsby plugin for Google AMP pages",
   "main": "index.js",
   "scripts": {
@@ -17,12 +17,12 @@
     "url": "https://github.com/Eyas/gatsby-plugin-google-amp/issues"
   },
   "dependencies": {
-    "@types/jsdom": "^16.2.3",
-    "core-js": "2",
-    "jsdom": "^13.0.0",
+    "@types/jsdom": "^16.2.4",
+    "core-js": "^3.6.5",
+    "jsdom": "^16.4.0",
     "lodash.flattendeep": "^4.4.0",
     "minimatch": "^3.0.4",
-    "react": "^16.6.1"
+    "react": "^16.14.0"
   },
   "keywords": [
     "gatsby",
@@ -33,11 +33,11 @@
     "accelerated-mobile-pages"
   ],
   "devDependencies": {
-    "@babel/cli": "^7.1.5",
-    "@babel/core": "^7.1.5",
+    "@babel/cli": "^7.12.1",
+    "@babel/core": "^7.12.3",
     "@types/minimatch": "^3.0.3",
-    "@types/react": "^16.9.23",
+    "@types/react": "^16.9.53",
     "@types/react-dom": "^16.9.5",
-    "babel-preset-gatsby-package": "^0.1.2"
+    "babel-preset-gatsby-package": "^0.5.3"
   }
 }

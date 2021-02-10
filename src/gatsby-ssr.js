@@ -25,13 +25,10 @@ export const onPreRenderHTML = (
   },
   {
     analytics,
-    canonicalBaseUrl,
     components = [],
     includedPaths = [],
     excludedPaths = [],
     pathIdentifier = "/amp/",
-    relAmpHtmlPattern = "{{canonicalBaseUrl}}{{pathname}}{{pathIdentifier}}",
-    facebookAppId = "",
   }
 ) => {
   const headComponents = flattenDeep(getHeadComponents());
@@ -131,9 +128,7 @@ export const onRenderBody = (
   { setHeadComponents, setHtmlAttributes, setPreBodyComponents, pathname },
   {
     analytics,
-    canonicalBaseUrl,
     pathIdentifier = "/amp/",
-    relCanonicalPattern = "{{canonicalBaseUrl}}{{pathname}}",
     useAmpClientIdApi = false
   }
 ) => {

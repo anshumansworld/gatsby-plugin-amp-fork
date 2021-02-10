@@ -483,6 +483,13 @@ export const replaceRenderer = (
       button.removeAttribute("separator");
     }
 
+    // Replace things that are just not allowed in AMP.
+    const bodyStyles = Array.from(document.body.querySelectorAll("style"));
+    const bodyNoScript = Array.from(document.body.querySelectorAll("noscript"));
+    for (const toRemove of [...bodyStyles, ...bodyNoScript]) {
+      toRemove.parentElement.removeChild(toRemove);
+    }
+
     setHeadComponents(
       Array.from(new Set(headComponents)).map((component, i) => (
         <Fragment key={`head-components-${i}`}>

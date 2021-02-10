@@ -1339,7 +1339,7 @@
     "browserslist" "^4.16.1"
     "semver" "7.0.0"
 
-"core-js@^3.6.5", "core-js@^3.7.0":
+"core-js@^3.7.0":
   "integrity" "sha512-KPYXeVZYemC2TkNEkX/01I+7yd+nX3KddKwZ1Ww7SKWdI2wQprSgLmrTddT8nw92AjEklTsPBoSdQBhbI1bQ6Q=="
   "resolved" "https://registry.npmjs.org/core-js/-/core-js-3.8.3.tgz"
   "version" "3.8.3"

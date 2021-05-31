@@ -603,12 +603,14 @@ export const replaceRenderer = (
     }
 
     setHeadComponents(
-      Array.from(new Set(headComponents)).map((component, i) => (
+      Array.from(
+        new Map(headComponents.map(({ name, version }) => [name, version]))
+      ).map(([name, version], i) => (
         <Fragment key={`head-components-${i}`}>
           <script
             async
-            custom-element={component.name}
-            src={`https://cdn.ampproject.org/v0/${component.name}-${component.version}.js`}
+            custom-element={name}
+            src={`https://cdn.ampproject.org/v0/${name}-${version}.js`}
           />
         </Fragment>
       ))

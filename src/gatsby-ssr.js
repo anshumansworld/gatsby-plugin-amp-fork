@@ -412,6 +412,18 @@ export const replaceRenderer = (
       img.removeAttribute("sizes");
     }
 
+    // Present string: transform
+    // Present null: skip
+    // Not-present (undefined): preserve
+    const attributeNames = {
+      "data-src": "src",
+      "data-srcset": "srcset",
+      "data-main-image": null,
+      "data-gatsby-image-ssr": null,
+      loading: null,
+      decoding: null,
+    };
+
     const images = Array.from(document.getElementsByTagName("img"));
     images.forEach((image) => {
       image.removeAttribute("loading");
@@ -423,12 +435,22 @@ export const replaceRenderer = (
       } else {
         ampImage = document.createElement("amp-img");
       }
-      const attributes = Object.keys(image.attributes);
-      const includedAttributes = attributes.map((key) => {
+      for (const key of Object.keys(image.attributes)) {
         const attribute = image.attributes[key];
-        ampImage.setAttribute(attribute.name, attribute.value);
-        return attribute.name;
-      });
+        if (!attribute.value) continue;
+
+        const renamed = attributeNames[attribute.name.toLowerCase()];
+        if (renamed === null) continue;
+        const attributeName = renamed || attribute.name;
+
+        if (ampImage.hasAttribute(attributeName) && !renamed) {
+          continue;
+        }
+
+        ampImage.setAttribute(attributeName, attribute.value);
+      }
+      const includedAttributes = Object.keys(ampImage.attributes);
+
       Object.keys(defaults.image).forEach((key) => {
         if (includedAttributes && includedAttributes.indexOf(key) === -1) {
           ampImage.setAttribute(key, defaults.image[key]);
@@ -498,7 +520,7 @@ export const replaceRenderer = (
         placeholder.setAttribute("layout", "fill");
         ampIframe.appendChild(placeholder);
 
-        const forbidden = ["allow", "allowfullscreen", "frameborder", "src"];
+        const forbidden = ["allow", "allowfullscreen", "frameborder", "src", "loading", "sandbox"];
         attributes = Object.keys(iframe.attributes).filter((key) => {
           const attribute = iframe.attributes[key];
           return !forbidden.includes(attribute.name);

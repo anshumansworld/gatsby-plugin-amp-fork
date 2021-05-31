@@ -415,6 +415,7 @@ export const replaceRenderer = (
     const images = Array.from(document.getElementsByTagName("img"));
     images.forEach((image) => {
       image.removeAttribute("loading");
+      image.removeAttribute("decoding");
       let ampImage;
       if (image.src && image.src.indexOf(".gif") > -1) {
         ampImage = document.createElement("amp-anim");

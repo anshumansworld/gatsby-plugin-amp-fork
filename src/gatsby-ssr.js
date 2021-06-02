@@ -520,7 +520,14 @@ export const replaceRenderer = (
         placeholder.setAttribute("layout", "fill");
         ampIframe.appendChild(placeholder);
 
-        const forbidden = ["allow", "allowfullscreen", "frameborder", "src", "loading", "sandbox"];
+        const forbidden = [
+          "allow",
+          "allowfullscreen",
+          "frameborder",
+          "src",
+          "loading",
+          "sandbox",
+        ];
         attributes = Object.keys(iframe.attributes).filter((key) => {
           const attribute = iframe.attributes[key];
           return !forbidden.includes(attribute.name);
@@ -615,6 +622,11 @@ export const replaceRenderer = (
       button.removeAttribute("via");
       button.removeAttribute("source");
       button.removeAttribute("separator");
+    }
+
+    // Auto ads by Adsense
+    if (document.getElementsByTagName("amp-auto-ads").length > 0) {
+      headComponents.push({ name: "amp-auto-ads", version: "0.1" });
     }
 
     // Replace things that are just not allowed in AMP.
